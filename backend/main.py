@@ -53,6 +53,12 @@ def health_check():
     return {"status": "ok"}
 
 
+@app.get("/issues", response_model=list[dict])
+def get_issues():
+    """Retrieve all reported civic issues."""
+    return issues
+
+
 @app.post("/issues", status_code=status.HTTP_201_CREATED)
 def create_issue(issue: IssueCreate):
     global issue_id_counter
@@ -114,3 +120,11 @@ def triage_issue(issue: IssueCreate):
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="AI triage analysis failed. Please verify your API key and try again.",
         )
+
+
+# Mount production frontend build if available (for containerized Cloud Run deployment)
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+if STATIC_DIR.exists():
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
+

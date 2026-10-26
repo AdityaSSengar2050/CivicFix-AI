@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
+
 function App() {
   // Backend health status
   const [status, setStatus] = useState('checking')
@@ -16,7 +18,7 @@ function App() {
   const [triageError, setTriageError] = useState('')
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/health')
+    fetch(`${API_URL}/health`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Server returned HTTP ${res.status}`)
@@ -62,7 +64,7 @@ function App() {
 
     try {
       // 1. Create issue in backend
-      const issueRes = await fetch('http://127.0.0.1:8000/issues', {
+      const issueRes = await fetch(`${API_URL}/issues`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -84,7 +86,7 @@ function App() {
 
       // 2. Perform AI triage with Gemini
       try {
-        const triageRes = await fetch('http://127.0.0.1:8000/triage', {
+        const triageRes = await fetch(`${API_URL}/triage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
